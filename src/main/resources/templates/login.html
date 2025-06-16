@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link rel="stylesheet" th:href="@{/Admin/dist/css/adminlte.min.css}">
+</head>
+
+<body class="hold-transition login-page">
+	<div class="login-box">
+		<div class="login-logo">
+			<a href="#"><b>Sistema de </b>Ventas</a>
+		</div>
+		<div class="card">
+			<div class="card-body login-card-body">
+				<p class="login-box-msg">Inicia sesión para comenzar</p>
+
+				<form th:action="@{/login}" method="post">
+					<div class="input-group mb-3">
+						<input type="text" name="username" class="form-control" placeholder="Usuario">
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-user"></span>
+							</div>
+						</div>
+					</div>
+					<div class="input-group mb-3">
+						<input type="password" name="password" class="form-control" placeholder="Contraseña">
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-lock"></span>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<p class="mb-0 mt-3">
+				<a th:href="@{/registro}" class="text-center">Registrar una nueva cuenta</a>
+			</p>
+		</div>
+	</div>
+</body>
+
+</html>

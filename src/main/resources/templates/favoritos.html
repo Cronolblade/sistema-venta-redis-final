@@ -1,0 +1,81 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+	<title>Mis Favoritos</title>
+</head>
+
+<body>
+	<section>
+		<div class="container-fluid">
+			<div th:if="${productosFavoritos.isEmpty()}">
+				<div class="callout callout-info">
+					<h5>No tienes favoritos</h5>
+					<p>Aún no has añadido ningún producto a tu lista de favoritos. ¡Explora nuestro catálogo!</p>
+				</div>
+			</div>
+
+			<div class="card card-solid" th:unless="${productosFavoritos.isEmpty()}">
+				<div class="card-body pb-0">
+					<div class="row">
+						<div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch"
+							th:each="producto : ${productosFavoritos}">
+							<div class="card bg-light d-flex flex-fill"
+								th:classappend="${producto.stock == 0} ? 'card-sold-out' : ''">
+								<div class="card-header text-muted border-bottom-0" th:text="${producto.categoria}">
+								</div>
+								<div class="card-body pt-0">
+									<div class="row">
+										<div class="col-7">
+											<h2 class="lead"><b th:text="${producto.name}">PRODUCTO</b></h2>
+											<p class="text-muted text-sm"><b>Stock: </b><span
+													th:text="${producto.stock}"></span></p>
+											<ul class="ml-4 mb-0 fa-ul text-muted">
+												<li class="small"><span class="fa-li"><i
+															class="fas fa-dollar-sign"></i></span> Precio: S/ <span
+														th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}"></span>
+												</li>
+											</ul>
+										</div>
+										<div class="col-5 text-center">
+											<img th:src="${producto.imageUrl != null && !producto.imageUrl.isEmpty() ? producto.imageUrl : '/Admin/dist/assets/img/productos/default-product.png'}"
+												alt="product-image" class="img-circle img-fluid"
+												style="height: 100px; width: 100px; object-fit: cover;">
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<div class="text-right">
+										<form th:action="@{/favoritos/eliminar/{id}(id=${producto.id})}" method="post"
+											class="d-inline-block mr-1">
+											<button type="submit" class="btn btn-sm btn-danger">
+												<i class="fas fa-trash"></i> Quitar
+											</button>
+										</form>
+
+										<!-- ================================================================ -->
+										<!-- ========== CAMBIO IMPORTANTE: Selector de Cantidad ========== -->
+										<form th:action="@{/carrito/agregar/{id}(id=${producto.id})}" method="post"
+											class="d-inline-flex align-items-center">
+											<input type="number" name="cantidad" value="1" min="1"
+												th:max="${producto.stock}" oninput="validateQuantity(this)"
+												class="form-control form-control-sm mr-2" style="width: 70px;"
+												th:disabled="${producto.stock == 0}">
+
+											<button type="submit" class="btn btn-sm btn-primary"
+												th:disabled="${producto.stock == 0}">
+												<i class="fas fa-shopping-cart"></i> Añadir
+											</button>
+										</form>
+										<!-- ================================================================ -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

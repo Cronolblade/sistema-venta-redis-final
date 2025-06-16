@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Registro de Usuario</title>
+	<link rel="stylesheet" th:href="@{/Admin/dist/css/adminlte.min.css}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="hold-transition register-page">
+	<div class="register-box">
+		<div class="register-logo">
+			<a href="#"><b>Sistema de </b>Ventas</a>
+		</div>
+
+		<div class="card">
+			<div class="card-body register-card-body">
+				<p class="login-box-msg">Registrar un nuevo usuario</p>
+
+				<div th:if="${param.error}" class="alert alert-danger" role="alert">
+					El nombre de usuario ya existe. Por favor, elige otro.
+				</div>
+
+				<form th:action="@{/registro}" method="post">
+					<div class="input-group mb-3">
+						<input type="text" name="username" class="form-control" placeholder="Nombre de usuario"
+							required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-user"></span>
+							</div>
+						</div>
+					</div>
+					<div class="input-group mb-3">
+						<input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-lock"></span>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<button type="submit" class="btn btn-primary btn-block">Registrar</button>
+						</div>
+					</div>
+				</form>
+
+				<hr>
+
+				<a th:href="@{/login}" class="text-center">Ya tengo una cuenta</a>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
