@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+	// Referencias a los elementos del DOM
 	const searchBox = document.getElementById('search-box');
 	const categoryFilter = document.getElementById('category-filter');
 	const productContainer = document.getElementById('product-list-container');
 	let searchTimeout;
 
+	// Leemos los IDs de los productos favoritos desde el atributo data-* del body.
 	const favoritosIds = new Set(JSON.parse(document.body.getAttribute('data-favoritos-ids') || '[]'));
 
+	// --- FUNCIÓN DE RENDERIZADO ---
+	// Toma una lista de productos en formato JSON y construye el HTML correspondiente.
 	function renderProducts(products) {
 		productContainer.innerHTML = '';
 
@@ -52,8 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <i class="${esFavorito ? 'fas' : 'far'} fa-heart"></i>
                                 </button>
                             </form>
-                            <!-- ================================================================ -->
-                            <!-- ========== CAMBIO IMPORTANTE: Selector de Cantidad ========== -->
                             <form action="/carrito/agregar/${producto.id}" method="post" class="d-inline-flex align-items-center">
                                 <input type="number" name="cantidad" value="1" min="1" max="${producto.stock}" 
                                        oninput="validateQuantity(this)"
@@ -62,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <i class="fas fa-shopping-cart"></i> Añadir
                                 </button>
                             </form>
-                            <!-- ================================================================ -->
                         </div>
                     </div>
                 </div>`;
@@ -70,6 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
+	// --- FUNCIÓN DE BÚSQUEDA ---
+	// Llama a la API REST para obtener la lista de productos filtrada.
 	async function fetchAndRenderProducts() {
 		const searchTerm = searchBox.value;
 		const category = categoryFilter.value;
@@ -89,12 +92,38 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	}
 
+	// --- LÓGICA DE WEBSOCKET ---
+	function connectWebSocket() {
+		const socket = new SockJS('/ws');
+		const stompClient = Stomp.over(socket);
+		stompClient.debug = null;
+
+		stompClient.connect({}, function(frame) {
+			console.log('Conectado al WebSocket: ' + frame);
+
+			stompClient.subscribe('/topic/productos', function(message) {
+				const notification = JSON.parse(message.body);
+				console.log('Notificación recibida:', notification);
+
+				if (notification.type === 'PRODUCT_UPDATE' && notification.productos) {
+					console.log("Actualizando la vista con los datos del WebSocket.");
+					// Usamos la lista que viene en el mensaje, no hacemos otro fetch.
+					renderProducts(notification.productos);
+				}
+			});
+		}, function(error) {
+			console.error('Error de WebSocket, intentando reconectar en 5 segundos...', error);
+			setTimeout(connectWebSocket, 5000);
+		});
+	}
+
+	// --- EJECUCIÓN INICIAL ---
 	searchBox.addEventListener('input', () => {
 		clearTimeout(searchTimeout);
 		searchTimeout = setTimeout(fetchAndRenderProducts, 300);
 	});
-
 	categoryFilter.addEventListener('change', fetchAndRenderProducts);
 
-	fetchAndRenderProducts();
+	fetchAndRenderProducts(); // Carga inicial de productos.
+	connectWebSocket();     // <-- ¡¡LÍNEA CLAVE DESCOMENTADA!! Inicia la conexión WebSocket.
 });

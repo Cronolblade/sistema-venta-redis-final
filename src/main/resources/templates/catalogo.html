@@ -50,12 +50,15 @@
 			</div>
 		</section>
 
-		<!-- El script de filtro dinámico NO necesita cambios. Se deja la misma referencia. -->
+		<!-- Librerías cliente necesarias para WebSockets con STOMP -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+		<!-- Referencia a nuestro script personalizado que contiene toda la lógica del catálogo -->
 		<script th:src="@{/Admin/dist/js/catalogo-filter.js}"></script>
 
-		<!-- Este script es necesario para que el botón de cerrar la alerta de éxito funcione -->
+		<!-- Script para cerrar las alertas de éxito automáticamente -->
 		<script>
-			// Cierra las alertas de Bootstrap después de 3 segundos
 			window.setTimeout(function () {
 				$(".alert-success").fadeTo(500, 0).slideUp(500, function () {
 					$(this).remove();

@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,17 +29,13 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable())
-
+		http
+				// Eliminamos la configuración de .cors() de aquí
+				.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(authorize -> authorize
-						// --- INICIO DE LA CORRECCIÓN ---
-						// Añadimos /js/** a la lista de recursos públicos.
-						.requestMatchers("/registro/**", "/css/**", "/js/**", "/Admin/**").permitAll()
-						// --- FIN DE LA CORRECCIÓN ---
-
-						.requestMatchers("/catalogo", "/carrito/**", "/favoritos/**").hasRole("USER")
-						.requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll() // CAMBIO: Permitir a todos
-																								// para el filtro
+						.requestMatchers("/registro/**", "/css/**", "/js/**", "/Admin/**", "/ws/**", "/error")
+						.permitAll().requestMatchers("/catalogo", "/carrito/**", "/favoritos/**").hasRole("USER")
+						.requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**").hasRole("ADMIN")
